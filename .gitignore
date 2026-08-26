@@ -1,0 +1,35 @@
+## --- Objetos e Binários Compilados ---
+[Bb]in/
+[Oo]bj/
+
+## --- Arquivos do Visual Studio Code ---
+.vscode/
+!.vscode/extensions.json
+*.code-workspace
+
+## --- Arquivos do Visual Studio (caso use em dupla) ---
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## --- Configurações Locais e Segredos ---
+appsettings.Development.json
+appsettings.Local.json
+*.secrets.json
+.env
+
+## --- Logs e Crash Dumps ---
+*.log
+*.crash
+.diagnostics/
+
+## --- Pastas de Ferramentas e Pacotes ---
+.nuget/
+.paket/
+/Paket.Restore.targets
+
+## --- Sistema Operacional ---
+Thumbs.db
+.DS_Store
