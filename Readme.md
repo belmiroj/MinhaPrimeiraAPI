@@ -1,16 +1,14 @@
-# 🚀 Projeto Cadastro de Usuários (API .NET + HTML)
+# 🚀 Gestão de Usuários (API .NET + SQLite + Interface Web)
 
-Este é um projeto simples de cadastro e consulta de usuários usando uma **API em .NET Core**, banco de dados local **SQLite** e uma interface web em **HTML/CSS/JavaScript**.
-
-Siga o passo a passo abaixo para rodar o projeto na sua máquina em poucos minutos!
+Este é um projeto simples de cadastro e consulta de usuários construído com uma **API em .NET 8/9** (usando Clean Architecture), banco de dados local **SQLite** e uma interface web interativa em **HTML/CSS/JavaScript**.
 
 ---
 
-## 🛠️ Pré-requisitos (O que você precisa instalar antes)
+## 🛠️ Pré-requisitos
 
-Antes de começar, você precisa ter instalado no seu computador:
+Antes de executar os comandos, certifique-se de ter instalado no seu computador:
 
-1. **.NET SDK** (Versão 8 ou superior)  
+1. **.NET SDK** (Versão 8.0 ou superior)  
    👉 [Baixar o .NET SDK](https://dotnet.microsoft.com/download)
 2. **VS Code** (Editor de código)  
    👉 [Baixar o VS Code](https://code.visualstudio.com/)
@@ -19,12 +17,13 @@ Antes de começar, você precisa ter instalado no seu computador:
 
 ---
 
-## 📋 Passo a Passo para Executar o Projeto
+## 📋 Passo a Passo para Clonar e Executar
+
+Siga a sequência de comandos abaixo no seu terminal (Prompt de Comando, PowerShell ou Git Bash):
 
 ### 1️⃣ Clonar o Repositório
 
-1. Abra o terminal no seu computador (Prompt de Comando, PowerShell ou Terminal do Git).
-2. Cole o comando abaixo e aperte **Enter**:
+Abra o terminal e execute o comando abaixo para baixar o código:
 
 ```bash
 git clone [https://github.com/seu-usuario/seu-repositorio.git](https://github.com/seu-usuario/seu-repositorio.git)
