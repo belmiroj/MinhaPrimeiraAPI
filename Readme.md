@@ -26,4 +26,4 @@ Siga a sequência de comandos abaixo no seu terminal (Prompt de Comando, PowerSh
 Abra o terminal e execute o comando abaixo para baixar o código:
 
 ```bash
-git clone [https://github.com/seu-usuario/seu-repositorio.git](https://github.com/seu-usuario/seu-repositorio.git)
+git clone https://github.com/seu-usuario/seu-repositorio.git

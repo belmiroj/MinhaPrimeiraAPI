@@ -14,7 +14,9 @@
       --text-muted: #64748b;
       --border-color: #e2e8f0;
       --error-color: #ef4444;
+      --error-hover: #dc2626;
       --success-color: #10b981;
+      --warning-color: #f59e0b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
@@ -124,6 +126,15 @@
 
     .btn-secondary:hover { background-color: #e2e8f0; }
 
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-group button {
+      flex: 1;
+    }
+
     .alert {
       padding: 10px 14px;
       border-radius: 6px;
@@ -163,6 +174,36 @@
     .user-name { font-weight: 600; font-size: 14px; }
     .user-email { font-size: 13px; color: var(--text-muted); }
 
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      padding: 6px 10px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+
+    .btn-edit {
+      background-color: #fef3c7;
+      color: #b45309;
+    }
+
+    .btn-edit:hover {
+      background-color: #fde68a;
+    }
+
+    .btn-delete {
+      background-color: #fee2e2;
+      color: var(--error-color);
+    }
+
+    .btn-delete:hover {
+      background-color: #fca5a5;
+    }
+
     .badge-id {
       background: #e0e7ff;
       color: #4338ca;
@@ -190,11 +231,14 @@
 
     <div class="grid-layout">
       
-      <!-- Seção 1: Formulário de Cadastro -->
+      <!-- Seção 1: Formulário de Cadastro / Edição -->
       <div class="card">
-        <h2 class="card-title">Novo Cadastro</h2>
+        <h2 class="card-title" id="formTitle">Novo Cadastro</h2>
         
         <form id="cadForm">
+          <!-- Campo oculto para armazenar o ID ao editar -->
+          <input type="hidden" id="usuarioId" value="" />
+
           <div class="form-group">
             <label for="nome">Nome Completo</label>
             <input type="text" id="nome" placeholder="Ex: Ana Silva" required />
@@ -207,7 +251,10 @@
 
           <div id="mensagemAlerta" class="alert"></div>
 
-          <button type="submit">Cadastrar Usuário</button>
+          <div class="btn-group">
+            <button type="submit" id="btnSubmit">Cadastrar Usuário</button>
+            <button type="button" id="btnCancelar" class="btn-secondary" style="display: none;" onclick="limparFormulario()">Cancelar</button>
+          </div>
         </form>
       </div>
 
@@ -229,11 +276,10 @@
   </div>
 
   <script>
-    // Ajuste a porta conforme a porta exibida pelo 'dotnet run' (ex: 5000, 5234)
     const API_URL = "http://localhost:5246/api/usuarios";
     let todosUsuarios = [];
 
-    // Função executada APENAS ao clicar no botão "Consultar Banco de Dados"
+    // Função executada ao clicar no botão "Consultar Banco de Dados"
     async function carregarUsuarios() {
       const lista = document.getElementById("listaUsuarios");
       lista.innerHTML = `<div class="empty-state">Consultando banco de dados...</div>`;
@@ -253,7 +299,7 @@
       }
     }
 
-    // Exibe os registros recebidos
+    // Exibe os registros recebidos com os botões de Ação (Editar e Excluir)
     function exibirUsuarios(usuarios) {
       const lista = document.getElementById("listaUsuarios");
       lista.innerHTML = "";
@@ -271,13 +317,65 @@
             <span class="user-name">${u.nome}</span>
             <span class="user-email">${u.email}</span>
           </div>
-          <span class="badge-id">#${u.id}</span>
+          <div class="user-actions">
+            <span class="badge-id">#${u.id}</span>
+            <button class="btn-icon btn-edit" onclick="prepararEdicao(${u.id}, '${u.nome}', '${u.email}')">✏️ Editar</button>
+            <button class="btn-icon btn-delete" onclick="excluirUsuario(${u.id})">🗑️ Excluir</button>
+          </div>
         `;
         lista.appendChild(item);
       });
     }
 
-    // Filtra apenas a lista que já foi carregada em memória (sem chamar a API)
+    // Prepara o formulário para a edição do usuário selecionado
+    function prepararEdicao(id, nome, email) {
+      document.getElementById("usuarioId").value = id;
+      document.getElementById("nome").value = nome;
+      document.getElementById("email").value = email;
+      
+      document.getElementById("formTitle").textContent = "Editar Usuário";
+      document.getElementById("btnSubmit").textContent = "Atualizar Usuário";
+      document.getElementById("btnCancelar").style.display = "block";
+      
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Reseta o formulário para o modo de cadastro
+    function limparFormulario() {
+      document.getElementById("usuarioId").value = "";
+      document.getElementById("cadForm").reset();
+      document.getElementById("formTitle").textContent = "Novo Cadastro";
+      document.getElementById("btnSubmit").textContent = "Cadastrar Usuário";
+      document.getElementById("btnCancelar").style.display = "none";
+      document.getElementById("mensagemAlerta").style.display = "none";
+    }
+
+    // Executa Exclusão via DELETE
+    async function excluirUsuario(id) {
+      if (!confirm(`Tem certeza que deseja excluir o usuário #${id}?`)) return;
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "DELETE"
+        });
+
+        if (!response.ok) {
+          throw new Error("Erro ao excluir usuário.");
+        }
+
+        // Se estiver editando o usuário recém-excluído, limpa o formulário
+        if (document.getElementById("usuarioId").value == id) {
+          limparFormulario();
+        }
+
+        // Recarrega a lista do banco
+        await carregarUsuarios();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    // Filtra a lista local em memória
     function filtrarUsuarios() {
       const termo = document.getElementById("filtro").value.toLowerCase();
       const filtrados = todosUsuarios.filter(u => 
@@ -286,33 +384,46 @@
       exibirUsuarios(filtrados);
     }
 
-    // Cadastra um novo usuário via POST
+    // Submissão do Formulário (Cadastrar com POST ou Atualizar com PUT)
     document.getElementById("cadForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      const id = document.getElementById("usuarioId").value;
       const nome = document.getElementById("nome").value;
       const email = document.getElementById("email").value;
       const alerta = document.getElementById("mensagemAlerta");
       
       alerta.style.display = "none";
 
+      const isEditMode = Boolean(id);
+      const url = isEditMode ? `${API_URL}/${id}` : API_URL;
+      const method = isEditMode ? "PUT" : "POST";
+
+      const payload = isEditMode ? { id: parseInt(id), nome, email } : { nome, email };
+
       try {
-        const response = await fetch(API_URL, {
-          method: "POST",
+        const response = await fetch(url, {
+          method: method,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nome, email })
+          body: JSON.stringify(payload)
         });
 
         if (!response.ok) {
-          const erroData = await response.json();
-          throw new Error(erroData.mensagem || "Erro ao realizar o cadastro.");
+          const erroData = await response.json().catch(() => null);
+          throw new Error(erroData?.mensagem || "Erro ao salvar os dados.");
         }
 
         alerta.className = "alert alert-success";
-        alerta.textContent = "Usuário cadastrado com sucesso no banco!";
+        alerta.textContent = isEditMode 
+          ? "Usuário atualizado com sucesso!" 
+          : "Usuário cadastrado com sucesso no banco!";
         alerta.style.display = "block";
 
-        document.getElementById("nome").value = "";
-        document.getElementById("email").value = "";
+        limparFormulario();
+        
+        // Se a lista já tiver sido consultada anteriormente, recarrega para mostrar as alterações
+        if (todosUsuarios.length > 0) {
+          await carregarUsuarios();
+        }
       } catch (err) {
         alerta.className = "alert alert-error";
         alerta.textContent = err.message;
