@@ -49,4 +49,36 @@ public class UsuariosController : ControllerBase
             return BadRequest(new { mensagem = ex.Message });
         }
     }
+
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(typeof(UsuarioResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Atualizar(int id, [FromBody] CriarUsuarioDto dto)
+    {
+        try
+        {
+            var usuarioAtualizado = await _usuarioService.AtualizarAsync(id, dto);
+            if (usuarioAtualizado is null) 
+                return NotFound(new { mensagem = "Usuário não encontrado." });
+
+            return Ok(usuarioAtualizado);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
+    }
+
+    [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Excluir(int id)
+    {
+        var sucesso = await _usuarioService.ExcluirAsync(id);
+        if (!sucesso) 
+            return NotFound(new { mensagem = "Usuário não encontrado." });
+
+        return NoContent();
+    }
 }
