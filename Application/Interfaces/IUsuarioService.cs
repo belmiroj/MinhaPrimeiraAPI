@@ -1,10 +1,12 @@
-using MinhaPrimeiraAPI.Application.DTOs;
+using MinhaPrimeiraAPI.Domain.Entities;
 
 namespace MinhaPrimeiraAPI.Application.Interfaces;
 
-public interface IUsuarioService
+public interface IUsuarioRepository
 {
-    Task<IEnumerable<UsuarioResponseDto>> ObterTodosAsync();
-    Task<UsuarioResponseDto?> ObterPorIdAsync(int id);
-    Task<UsuarioResponseDto> CriarAsync(CriarUsuarioDto dto);
+    Task<IEnumerable<Usuario>> ObterTodosAsync();
+    Task<Usuario?> ObterPorIdAsync(int id);
+    Task AdicionarAsync(Usuario usuario);
+    Task AtualizarAsync(Usuario usuario);
+    Task ExcluirAsync(Usuario usuario);
 }

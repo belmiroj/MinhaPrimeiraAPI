@@ -36,4 +36,32 @@ public class UsuarioService : IUsuarioService
 
         return new UsuarioResponseDto(usuario.Id, usuario.Nome, usuario.Email);
     }
+    public async Task<UsuarioResponseDto?> AtualizarAsync(int id, CriarUsuarioDto dto)
+    {
+        var usuario = await _usuarioRepository.ObterPorIdAsync(id);
+        if (usuario is null) return null;
+
+        // Atualiza as propriedades da entidade
+        usuario.Nome = dto.Nome;
+        usuario.Email = dto.Email;
+
+        await _usuarioRepository.AtualizarAsync(usuario);
+
+        return new UsuarioResponseDto 
+        { 
+            Id = usuario.Id, 
+            Nome = usuario.Nome, 
+            Email = usuario.Email 
+        };
+    }
+
+    public async Task<bool> ExcluirAsync(int id)
+    {
+        var usuario = await _usuarioRepository.ObterPorIdAsync(id);
+        if (usuario is null) return false;
+
+        await _usuarioRepository.ExcluirAsync(usuario);
+        return true;
+    }
+
 }
