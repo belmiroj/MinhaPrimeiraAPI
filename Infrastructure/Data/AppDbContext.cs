@@ -11,7 +11,6 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Configuração explícita da tabela (Fluent API)
         modelBuilder.Entity<Usuario>(builder =>
         {
             builder.HasKey(u => u.Id);
