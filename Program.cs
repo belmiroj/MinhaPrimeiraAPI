@@ -3,7 +3,7 @@ using MinhaPrimeiraAPI.Application.Interfaces;
 using MinhaPrimeiraAPI.Application.Services;
 using MinhaPrimeiraAPI.Infrastructure.Data;
 using MinhaPrimeiraAPI.Infrastructure.Repositories;
-using Microsoft.AspNetCore.HttpLogging; // <-- 1. Importação necessária para os logs
+using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
 
