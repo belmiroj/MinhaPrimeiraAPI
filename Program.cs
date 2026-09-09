@@ -3,12 +3,26 @@ using MinhaPrimeiraAPI.Application.Interfaces;
 using MinhaPrimeiraAPI.Application.Services;
 using MinhaPrimeiraAPI.Infrastructure.Data;
 using MinhaPrimeiraAPI.Infrastructure.Repositories;
+using Microsoft.AspNetCore.HttpLogging; // <-- 1. Importação necessária para os logs
 
 var builder = WebApplication.CreateBuilder(args);
 
 // =========================================================================
 // ETAPA 1: INJEÇÃO DE SERVIÇOS (Inversion of Control - IoC)
 // =========================================================================
+
+// 1.0 Configuração do serviço de Logs HTTP da API
+builder.Services.AddHttpLogging(logging =>
+{
+    // Define o que aparecerá no log automático do console
+    logging.LoggingFields = HttpLoggingFields.RequestMethod 
+                          | HttpLoggingFields.RequestPath 
+                          | HttpLoggingFields.RequestBody      // Mostra o JSON enviado no POST/PUT
+                          | HttpLoggingFields.ResponseStatusCode;
+    
+    // Limite de tamanho do JSON que o log vai ler (4KB é mais que suficiente para usuários)
+    logging.RequestBodyLogLimit = 4096; 
+});
 
 // 1.1 Configurações de Framework e Infraestrutura de Terceiros
 builder.Services.AddControllers();
@@ -40,7 +54,6 @@ var app = builder.Build();
 
 
 // Banco de dados em memória (SQLite) para testes
-
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -52,12 +65,8 @@ using (var scope = app.Services.CreateScope())
 // A ordem AQUI IMPORTA MUITO para a execução da requisição!
 // =========================================================================
 
-// Execuções ao iniciar a aplicação (Ex: criar banco automaticamente)
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
-}
+// 2.0 ATIVE O MIDDLEWARE DE LOGS (Deve ficar no topo para capturar tudo)
+app.UseHttpLogging();
 
 if (app.Environment.IsDevelopment())
 {
